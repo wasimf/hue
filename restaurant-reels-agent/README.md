@@ -33,6 +33,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 # ffmpeg: apt install ffmpeg  (או brew install ffmpeg). אם אין, משתמשים בבינארי של imageio-ffmpeg.
 cp config.example.toml config.toml   # לערוך: שם המסעדה, handle, עיר, שעת פרסום
+python -m reels_agent web            # ממשק בדפדפן: העלאת תמונות + מוזיקה + תצוגה מקדימה
 python -m reels_agent demo           # רילס לדוגמה עם תמונות מזויפות -> output/<תאריך>/
 python -m reels_agent check          # בודק ffmpeg, פונטים, אינסטגרם, אחסון, טלגרם
 ```
@@ -40,6 +41,27 @@ python -m reels_agent check          # בודק ffmpeg, פונטים, אינסט
 מומלץ להוריד פונט עברי יפה (למשל [Heebo](https://fonts.google.com/specimen/Heebo) או
 [Assistant](https://fonts.google.com/specimen/Assistant)) ולשים את קובצי ה-TTF ב-`assets/fonts/`.
 בלי זה משתמשים ב-DejaVu Sans, שתומך בעברית אבל פחות יפה.
+
+## 🖥️ ממשק ווב: העלאה, מוזיקה ותצוגה מקדימה
+
+הדרך הכי נוחה לנסות ולכוון את העיצוב לפני שמפעילים אוטומציה:
+
+```bash
+python -m reels_agent web        # http://127.0.0.1:5000
+```
+
+בדפדפן: גוררים תמונות (וקובעים את הסדר), בוחרים מוזיקה — רצועה מהספרייה, **קישור** לקובץ אודיו,
+העלאת קובץ, או בלי מוזיקה — מכווננים שניות לתמונה ופריסה, ולוחצים "צור רילס". התצוגה המקדימה
+מופיעה בנגן בגודל טלפון תוך שניות. אחר כך אפשר לערוך את שמות המנות, משפט הפתיחה, הסיום והכיתוב,
+ללחוץ "רנדר מחדש עם העריכות", ולפרסם ישירות לאינסטגרם (אם הוגדרו טוקן ואחסון).
+
+הערה על מוזיקה מקישור: קישור ישיר לקובץ (mp3/m4a/wav) עובד מיד. קישור לעמוד וידאו דורש
+`pip install yt-dlp`, ובכל מקרה **באחריותכם לוודא שיש לכם זכויות לשימוש מסחרי** — אינסטגרם מורידה
+רילסים עם מוזיקה לא מורשית. ה-API של אינסטגרם לא מאפשר לבחור צליל מהספרייה של אינסטגרם, לכן
+המוזיקה מוטמעת בקובץ.
+
+השרת מיועד להרצה מקומית בלבד (מאזין ל-127.0.0.1 ובלי אימות). לחשיפה ברשת פנימית:
+`python -m reels_agent web --host 0.0.0.0`.
 
 ## שימוש יומי
 
@@ -112,6 +134,7 @@ docker compose up -d --build
 | `caption [--notes "..."]` | רק הכיתוב (JSON + טקסט) |
 | `publish --video x.mp4 --caption caption.txt` | פרסום קובץ קיים |
 | `demo [--ai]` | רילס לדוגמה עם תמונות מזויפות |
+| `web [--port 5000]` | ממשק דפדפן: העלאת תמונות, מוזיקה, תצוגה מקדימה, עריכה ופרסום |
 | `daemon` | טלגרם + פרסום יומי מתוזמן |
 | `check` | בדיקת הגדרות |
 
@@ -125,6 +148,7 @@ reels_agent/
   storage.py   S3 / תיקייה סטטית -> URL ציבורי
   publish.py   Instagram Graph API: container -> poll -> publish
   pipeline.py  הריצה היומית, ארכוב, יומן ב-state/posts.jsonl
+  web.py       ממשק דפדפן מקומי (Flask): העלאה, תצוגה מקדימה, עריכה, פרסום
   cli.py       פקודות + דמון מתוזמן
 ```
 

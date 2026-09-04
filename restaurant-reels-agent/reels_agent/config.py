@@ -58,6 +58,7 @@ class VideoCfg:
 class MusicCfg:
     enabled: bool = True
     volume: float = 0.8
+    start_seconds: float = 0.0  # skip a quiet intro in the track
     fallback_generated: bool = True
 
 

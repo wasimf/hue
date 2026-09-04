@@ -388,7 +388,7 @@ class Renderer:
             return "1.08", cx, f"(ih-ih/zoom)*(1-on/{n})"
         return f"1+0.04*on/{n}", cx, cy  # "card": barely-there drift
 
-    def build_video(self, segs: list[Segment], music: Path | None, out: Path) -> Path:
+    def build_video(self, segs: list[Segment], music: Path | None, out: Path, music_start: float = 0.0) -> Path:
         v = self.cfg.video
         fps, W, H, T = v.fps, self.W, self.H, v.transition_seconds
         cmd = [ffmpeg_bin(), "-y", "-hide_banner", "-loglevel", "error", "-stats"]
@@ -431,8 +431,9 @@ class Renderer:
         maps = ["-map", "[vout]"]
         if music_index is not None:
             fade_out = max(0.5, min(2.5, total / 4))
+            start = max(0.0, music_start)
             parts.append(
-                f"[{music_index}:a]atrim=0:{total:.3f},asetpts=PTS-STARTPTS,volume={self.cfg.music.volume},"
+                f"[{music_index}:a]atrim={start:.3f}:{start + total:.3f},asetpts=PTS-STARTPTS,volume={self.cfg.music.volume},"
                 f"afade=t=in:st=0:d=1.2,afade=t=out:st={max(0.0, total - fade_out):.3f}:d={fade_out:.3f}[aout]")
             maps += ["-map", "[aout]", "-c:a", "aac", "-b:a", "160k", "-ar", "44100"]
 

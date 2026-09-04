@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt pillow-heif
 COPY reels_agent ./reels_agent
 COPY config.example.toml .
 ENV REELS_CONFIG=/data/config.toml PYTHONUNBUFFERED=1
+EXPOSE 5000
 VOLUME ["/data"]
 WORKDIR /data
 ENTRYPOINT ["python", "-m", "reels_agent"]

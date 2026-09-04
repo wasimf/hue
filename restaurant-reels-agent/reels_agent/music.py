@@ -3,8 +3,13 @@ from __future__ import annotations
 
 import logging
 import random
+import re
+import shutil
 import subprocess
 from pathlib import Path
+from urllib.parse import unquote, urlparse
+
+import requests
 
 from .config import Config
 from .ffmpeg import ffmpeg_bin
@@ -28,6 +33,49 @@ def pick_track(cfg: Config, seed: str | None = None) -> Path | None:
         return None
     rng = random.Random(seed)
     return rng.choice(tracks)
+
+
+def fetch_track(url: str, dest_dir: Path, timeout: int = 180) -> Path:
+    """Download a music track from a link.
+
+    A direct audio URL (mp3/m4a/wav/ogg...) is downloaded as-is. Anything else (a YouTube
+    or SoundCloud page) needs `yt-dlp` installed, and it is on you to have the rights to
+    use that audio in a commercial post - Instagram removes reels with unlicensed music.
+    """
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    name = Path(unquote(urlparse(url).path)).name or "track"
+    ext = Path(name).suffix.lower()
+
+    if ext in AUDIO_EXTS:
+        dest = dest_dir / re.sub(r"[^\w.\-]+", "_", name)
+        with requests.get(url, stream=True, timeout=timeout) as r:
+            r.raise_for_status()
+            ctype = r.headers.get("content-type", "")
+            if ctype and not (ctype.startswith("audio/") or ctype in ("application/octet-stream", "binary/octet-stream")):
+                raise RuntimeError(f"{url} returned {ctype}, not audio")
+            with open(dest, "wb") as fh:
+                for chunk in r.iter_content(1 << 16):
+                    fh.write(chunk)
+        log.info("Downloaded music: %s (%.1f MB)", dest.name, dest.stat().st_size / 1e6)
+        return dest
+
+    ytdlp = shutil.which("yt-dlp")
+    if not ytdlp:
+        raise RuntimeError(
+            "This link is not a direct audio file. Install yt-dlp (pip install yt-dlp) to fetch it, "
+            "or paste a direct .mp3/.m4a/.wav URL, or upload the file."
+        )
+    out = dest_dir / "track.%(ext)s"
+    r = subprocess.run(
+        [ytdlp, "-x", "--audio-format", "mp3", "--no-playlist", "-q", "-o", str(out), url],
+        capture_output=True, text=True, timeout=timeout)
+    if r.returncode != 0:
+        raise RuntimeError(f"yt-dlp failed: {r.stderr[-400:] or r.stdout[-400:]}")
+    files = sorted(dest_dir.glob("track.*"))
+    if not files:
+        raise RuntimeError("yt-dlp produced no file")
+    log.info("Downloaded music via yt-dlp: %s", files[0].name)
+    return files[0]
 
 
 def synthesize_pad(out: Path, seconds: float, seed: str | None = None) -> Path:

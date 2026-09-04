@@ -36,6 +36,7 @@ preset = "medium"
 [music]
 enabled = true
 volume = 0.8
+start_seconds = 0.0           # לדלג על פתיחה שקטה ברצועה
 fallback_generated = true     # synthesize a soft pad when assets/music is empty
 
 [ai]

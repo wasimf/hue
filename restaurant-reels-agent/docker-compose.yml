@@ -3,6 +3,8 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env            # ANTHROPIC_API_KEY, IG_USER_ID, IG_ACCESS_TOKEN, TELEGRAM_BOT_TOKEN, S3_*
+    ports:
+      - "5000:5000"           # `docker compose run --rm reels-agent web --host 0.0.0.0`
     volumes:
       - ./data:/data          # config.toml, inbox/, output/, assets/, state/
     command: ["daemon"]

@@ -127,6 +127,13 @@ def cmd_check(cfg: Config, args) -> int:
     return 0 if ok else 1
 
 
+def cmd_web(cfg: Config, args) -> int:
+    from .web import serve
+
+    serve(cfg, host=args.host, port=args.port, debug=args.debug)
+    return 0
+
+
 # ----------------------------------------------------------------------------- daemon
 
 
@@ -273,6 +280,12 @@ def main(argv: list[str] | None = None) -> int:
 
     s = sub.add_parser("daemon", help="Telegram intake + daily scheduled posting")
     s.set_defaults(fn=cmd_daemon)
+
+    s = sub.add_parser("web", help="local browser UI: upload photos + music, preview the reel")
+    s.add_argument("--host", default="127.0.0.1")
+    s.add_argument("--port", type=int, default=5000)
+    s.add_argument("--debug", action="store_true")
+    s.set_defaults(fn=cmd_web)
 
     s = sub.add_parser("check", help="verify ffmpeg, fonts, Instagram, storage and Telegram setup")
     s.set_defaults(fn=cmd_check)

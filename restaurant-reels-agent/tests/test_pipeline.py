@@ -1,4 +1,5 @@
 """Smoke test: synthetic photos -> caption template -> rendered MP4 with audio."""
+import time
 from datetime import date
 from pathlib import Path
 
@@ -57,3 +58,32 @@ def test_segments_cap_under_90s(cfg):
     r = Renderer(cfg)
     segs = r.make_segments(photos, [""] * 6, "hook", "bye", cfg.base_dir / "work", date.today())
     assert r.total_duration(segs) <= 88.5
+
+
+def test_web_render_endpoint(cfg):
+    """The browser UI can upload photos and get a rendered reel back."""
+    from io import BytesIO
+
+    from reels_agent.web import create_app
+
+    photos = make_sample_photos(cfg.base_dir / "web-photos", n=2)
+    app = create_app(cfg)
+    client = app.test_client()
+    assert client.get("/").status_code == 200
+    assert client.get("/api/setup").get_json()["restaurant"] == "בדיקה"
+
+    data = {"options": '{"use_ai": false, "music_choice": "none", "seconds_per_photo": 1.5}'}
+    files = [(BytesIO(p.read_bytes()), p.name) for p in photos]
+    data["photos"] = files
+    r = client.post("/api/render", data=data, content_type="multipart/form-data")
+    job = r.get_json()["job"]
+
+    for _ in range(120):
+        status = client.get(f"/api/job/{job}").get_json()
+        if status["status"] in ("done", "error"):
+            break
+        time.sleep(0.5)
+    assert status["status"] == "done", status.get("log")
+    assert status["duration"] > 3
+    assert client.get(status["video_url"]).status_code == 200
+    assert client.get(status["cover_url"]).status_code == 200

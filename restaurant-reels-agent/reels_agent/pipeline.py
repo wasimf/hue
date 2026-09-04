@@ -42,9 +42,10 @@ class RunResult:
 
 
 def render_reel(cfg: Config, photos: list[Path], caption: CaptionResult, day: date,
-                workdir: Path | None = None) -> tuple[Path, Path, float]:
+                workdir: Path | None = None, music: Path | None = None,
+                out_dir: Path | None = None) -> tuple[Path, Path, float]:
     """Render the MP4 (+cover JPG). Returns (video, cover, duration_seconds)."""
-    out_dir = cfg.paths.output / day.isoformat()
+    out_dir = out_dir or cfg.paths.output / day.isoformat()
     workdir = workdir or out_dir / "work"
     if workdir.exists():
         shutil.rmtree(workdir)
@@ -53,9 +54,10 @@ def render_reel(cfg: Config, photos: list[Path], caption: CaptionResult, day: da
     renderer = Renderer(cfg)
     segs = renderer.make_segments(photos, caption.dish_labels, caption.hook, caption.outro, workdir, day)
     total = renderer.total_duration(segs)
-    music = choose_music(cfg, total, workdir, seed=day.isoformat())
+    music = music or choose_music(cfg, total, workdir, seed=day.isoformat())
     stamp = datetime.now().strftime("%H%M%S")
-    video = renderer.build_video(segs, music, out_dir / f"reel-{day.isoformat()}-{stamp}.mp4")
+    video = renderer.build_video(segs, music, out_dir / f"reel-{day.isoformat()}-{stamp}.mp4",
+                                 music_start=cfg.music.start_seconds)
     cover = renderer.cover_image(segs, out_dir / f"cover-{day.isoformat()}-{stamp}.jpg")
     info = probe(video)
     (out_dir / "caption.txt").write_text(caption.full_caption(), encoding="utf-8")
