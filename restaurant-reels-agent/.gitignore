@@ -1,0 +1,14 @@
+config.toml
+.env
+inbox/
+archive/
+output/
+state/
+assets/music/*
+!assets/music/.gitkeep
+assets/fonts/*
+!assets/fonts/.gitkeep
+assets/logo.*
+__pycache__/
+*.pyc
+.pytest_cache/

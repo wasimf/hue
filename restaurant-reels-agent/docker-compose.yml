@@ -1,0 +1,8 @@
+services:
+  reels-agent:
+    build: .
+    restart: unless-stopped
+    env_file: .env            # ANTHROPIC_API_KEY, IG_USER_ID, IG_ACCESS_TOKEN, TELEGRAM_BOT_TOKEN, S3_*
+    volumes:
+      - ./data:/data          # config.toml, inbox/, output/, assets/, state/
+    command: ["daemon"]
