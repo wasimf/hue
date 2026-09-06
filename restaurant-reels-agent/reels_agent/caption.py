@@ -71,6 +71,14 @@ class CaptionResult:
         }
 
 
+def _prefixed(prefix: str, name: str) -> str:
+    """Hebrew: the definite article is swallowed by a one-letter preposition.
+
+    "ב" + "המסעדה שלי" -> "במסעדה שלי", not "בהמסעדה שלי".
+    """
+    return prefix + (name[1:] if name.startswith("ה") else name)
+
+
 def template_caption(cfg: Config, n_photos: int, day: date | None = None) -> CaptionResult:
     day = day or date.today()
     r = cfg.restaurant
@@ -83,7 +91,7 @@ def template_caption(cfg: Config, n_photos: int, day: date | None = None) -> Cap
         if t not in seen:
             seen.add(t)
             uniq.append(t)
-    caption = f"מה יש היום ב{r.name}? 🥗\n{r.tagline}\n{r.cta}"
+    caption = f"מה יש היום {_prefixed('ב', r.name)}? 🥗\n{r.tagline}\n{r.cta}"
     return CaptionResult(
         hook=r.tagline or "מה יש היום?",
         dish_labels=[""] * n_photos,
@@ -119,12 +127,6 @@ def generate_caption(cfg: Config, photos: list[Path], notes: str = "", day: date
         log.warning("anthropic SDK not installed; using template caption")
         return fallback
 
-    try:
-        client = anthropic.Anthropic()
-    except anthropic.AnthropicError as e:  # no API key etc.
-        log.warning("Claude client unavailable (%s); using template caption", e)
-        return fallback
-
     r = cfg.restaurant
     lang = {"he": "Hebrew", "en": "English", "ar": "Arabic", "ru": "Russian"}.get(cfg.ai.language, cfg.ai.language)
     system = SYSTEM.format(language=lang, max_hashtags=cfg.ai.max_hashtags, style=cfg.ai.style)
@@ -141,6 +143,7 @@ def generate_caption(cfg: Config, photos: list[Path], notes: str = "", day: date
     )})
 
     try:
+        client = anthropic.Anthropic()
         # Server-side refusal fallback keeps the daily post flowing even if the safety
         # classifier declines a request (rare for food photos, but it costs nothing).
         resp = client.beta.messages.create(
@@ -160,6 +163,14 @@ def generate_caption(cfg: Config, photos: list[Path], notes: str = "", day: date
         return fallback
     except anthropic.APIConnectionError as e:
         log.warning("Claude connection error (%s); using template caption", e)
+        return fallback
+    except TypeError as e:
+        # The SDK raises this at request time when no credentials could be resolved.
+        log.warning("No Claude credentials (%s). Set ANTHROPIC_API_KEY or run `ant auth login`; "
+                    "using template caption", e)
+        return fallback
+    except Exception as e:  # a caption is never worth failing the daily post over
+        log.warning("Claude call failed (%s: %s); using template caption", type(e).__name__, e)
         return fallback
 
     if resp.stop_reason == "refusal":
