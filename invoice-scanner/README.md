@@ -131,6 +131,55 @@ OCR_PROVIDER=paddle OCR_SERVICE_URL=http://127.0.0.1:8868 npm run dev
 docker compose up --build        # app on :3000, OCR on :8868
 ```
 
+Then open http://localhost:3000.
+
+**What to expect on the first run.** Building the OCR image installs PaddlePaddle
+(~500 MB of wheels) and the first container start downloads the recognition models. Compose waits
+for the OCR service to report healthy before starting the app, so the first `up` can sit quiet for
+several minutes — that is the models arriving, not a hang. Follow it with
+`docker compose logs -f ocr`. Models are cached in the `paddle-models` volume, so later starts are
+fast.
+
+**Requirements.** Give Docker at least 4 GB of RAM (Docker Desktop → Settings → Resources);
+PaddlePaddle needs ~1.5–2 GB while running. Roughly 3 GB of disk for the images and models.
+
+**Apple Silicon (M1/M2/M3/M4).** PaddlePaddle publishes no `linux/arm64` wheels, so the OCR image
+fails to build on ARM with `No matching distribution found for paddlepaddle`. Two ways round it:
+
+* uncomment `platform: linux/amd64` under the `ocr` service in `docker-compose.yml` and rebuild —
+  it then runs under emulation, which works but is several times slower; or
+* run the app in Docker and the sidecar natively on macOS (`pip install -r ocr-service/requirements.txt`
+  picks the right wheel there), pointing the app at `http://host.docker.internal:8868`.
+
+Everything except OCR — the UI, digital-PDF parsing, validation, export — runs natively on ARM
+either way.
+
+**Checking it works.**
+
+```bash
+curl http://localhost:3000/health/ready     # {"status":"ok","ocr":{"available":true,...}}
+docker compose ps                           # ocr should be "healthy"
+curl -F "files=@invoice.pdf" http://localhost:3000/api/invoices
+```
+
+**Stopping and cleaning up.**
+
+```bash
+docker compose down            # stop, keep the downloaded models
+docker compose down -v         # also delete the model cache
+```
+
+**If something goes wrong.**
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `No matching distribution found for paddlepaddle` | ARM host — see Apple Silicon above |
+| OCR container killed / exit 137 | Out of memory — raise Docker's RAM limit to 4 GB+ |
+| `ocr` never becomes healthy | Watch `docker compose logs -f ocr`; usually a slow model download. `curl http://localhost:8868/health` shows `missing_dependencies` if an import failed |
+| App starts but readiness says `available: false` | The app cannot reach the sidecar; confirm `OCR_SERVICE_URL=http://ocr:8868` (the service name, not localhost) |
+| Uploads return `413` | Raise `MAX_FILE_SIZE_BYTES` in the `app` service environment |
+| A scanned page returns no text | Raise `OCR_PDF_DPI` to 300, and check `?debug=true` output for what was recognised |
+
 ### Production build
 
 ```bash

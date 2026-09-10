@@ -65,6 +65,10 @@ DET_DB_UNCLIP_RATIO = float(os.getenv("PADDLE_DET_DB_UNCLIP_RATIO", "1.8"))
 DET_LIMIT_SIDE_LEN = int(os.getenv("PADDLE_DET_LIMIT_SIDE_LEN", "1920"))
 DROP_SCORE = float(os.getenv("PADDLE_DROP_SCORE", "0.35"))
 MAX_PDF_DPI = int(os.getenv("PADDLE_MAX_DPI", "400"))
+# Load the models during startup instead of on the first request. The container
+# then only reports healthy once it can actually serve, which is what lets
+# docker compose hold the app back until OCR is genuinely ready.
+PRELOAD = os.getenv("PADDLE_PRELOAD", "false").lower() in {"1", "true", "yes"}
 
 app = FastAPI(title="invoice-scanner PaddleOCR service", version="1.0.0")
 
@@ -256,6 +260,17 @@ def _pdf_to_arrays(data: bytes, dpi: int) -> list["np.ndarray"]:
             array = np.frombuffer(pixmap.samples, dtype=np.uint8).reshape(pixmap.height, pixmap.width, pixmap.n)
             arrays.append(array[:, :, :3])
     return arrays
+
+
+@app.on_event("startup")
+def preload_models() -> None:
+    if not PRELOAD:
+        return
+    for language in DEFAULT_LANGUAGES:
+        try:
+            get_engine(language)
+        except Exception:  # noqa: BLE001 - never let a warm-up failure kill the service
+            logger.warning("could not preload the model for language=%s", language, exc_info=True)
 
 
 @app.get("/health")

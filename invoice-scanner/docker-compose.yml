@@ -1,11 +1,29 @@
 services:
   ocr:
     build: ./ocr-service
+    # PaddlePaddle publishes no linux/arm64 wheels. On Apple Silicon uncomment
+    # the next line to build and run this service under emulation (slower but
+    # works), or run the sidecar natively on the host instead (see README).
+    # platform: linux/amd64
     environment:
       PADDLE_LANGS: ${OCR_LANGS:-en}
       PADDLE_USE_GPU: "false"
+      # Download and load the models while `docker compose up` is still
+      # starting, so the first upload is not the slow one.
+      PADDLE_PRELOAD: "true"
+    volumes:
+      # Persist the downloaded models across restarts and rebuilds.
+      - paddle-models:/root/.paddleocr
     ports:
       - "8868:8868"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8868/health"]
+      interval: 15s
+      timeout: 10s
+      # Generous: the first start downloads the recognition models.
+      start_period: 600s
+      retries: 10
 
   app:
     build: .
@@ -17,7 +35,13 @@ services:
       OCR_PROVIDER: paddle
       OCR_SERVICE_URL: http://ocr:8868
       OCR_LANGS: ${OCR_LANGS:-en}
+      # Scanned multi-page PDFs on CPU are not fast; allow for it.
+      OCR_TIMEOUT_MS: "300000"
       UPLOAD_DIR: /tmp/uploads
       LOG_LEVEL: info
     ports:
       - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  paddle-models:
