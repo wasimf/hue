@@ -182,9 +182,16 @@ docker compose down -v         # also delete the model cache
 
 ### 4. Deploy to Vercel
 
+From this directory, with the [Vercel CLI](https://vercel.com/docs/cli):
+
 ```bash
-vercel deploy            # from invoice-scanner/, or set Root Directory = invoice-scanner
+cd invoice-scanner
+vercel            # first run links/creates the project and deploys a preview
+vercel --prod     # promote to the production URL
 ```
+
+Or from the dashboard: **New Project → import this repository → set Root Directory to
+`invoice-scanner`**. Pushes to any branch then build as preview deployments.
 
 `api/index.js` hands the request to the very same Fastify application; `vercel.json` routes the API
 paths to it and lets the platform serve `public/` directly.

@@ -1,0 +1,10 @@
+# Not needed by the serverless deployment (OCR runs elsewhere, tests never ship).
+ocr-service/
+tests/
+vitest.config.ts
+docker-compose.yml
+Dockerfile
+.dockerignore
+tmp/
+dist/
+node_modules/
