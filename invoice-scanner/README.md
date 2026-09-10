@@ -351,7 +351,7 @@ in `createOcrProvider` — three methods, no other file changes.
 ## Tests
 
 ```bash
-npm test          # 67 tests
+npm test          # 74 tests
 npm run typecheck
 ```
 
@@ -364,6 +364,8 @@ npm run typecheck
   export, debug output, error codes, magic-byte type detection, and one bad file not breaking a batch.
 * `tests/pdfTextLayer.test.ts` – real PDFs through the text-layer fast path, including a provider
   that throws if OCR is touched unnecessarily.
+* `tests/paddleProvider.test.ts` – the sidecar contract, against an HTTP stub that speaks it:
+  multipart upload, response validation, retry-on-5xx, no-retry-on-4xx, health and unreachability.
 
 ### Mock OCR
 
