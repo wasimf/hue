@@ -153,6 +153,16 @@ describe('end-to-end field mapping', () => {
     expect(invoice.warnings.some((warning) => warning.includes('could not be found'))).toBe(true);
   });
 
+  it('does not derive an amount from a candidate that was itself discarded', async () => {
+    const document = await loadFixtureDocument('quotation', config);
+    const { invoice } = mapDocumentToInvoice(document, config, NOW);
+
+    // The net figure scores below the threshold, so reporting VAT as
+    // "total - net" would invent a number that is not on the document.
+    expect(invoice.invoiceSum).toBeNull();
+    expect(invoice.invoiceVat).toBeNull();
+  });
+
   it('keeps rejected alternatives available for debugging', async () => {
     const document = await loadFixtureDocument('acme-invoice-en', config);
     const { extractions } = mapDocumentToInvoice(document, config, NOW);

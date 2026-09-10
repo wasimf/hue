@@ -284,13 +284,19 @@ export function extractAmounts(context: ExtractionContext): AmountExtraction {
       reasons: [from],
     });
 
-  if (net && vat && !gross) {
+  // Only derive from values that will themselves survive the mapper's score
+  // threshold: a figure computed from a discarded one is worse than a null,
+  // because it looks like it was read off the document.
+  const trusted = (candidate: FieldCandidate<number> | null): candidate is FieldCandidate<number> =>
+    candidate !== null && candidate.score >= context.config.FIELD_MIN_SCORE;
+
+  if (trusted(net) && trusted(vat) && !gross) {
     gross = derive(net.value + vat.value, 'derived from invoice sum + VAT');
     notes.push('invoiceSumAndVat was derived from invoiceSum + invoiceVat');
-  } else if (gross && vat && !net) {
+  } else if (trusted(gross) && trusted(vat) && !net) {
     net = derive(gross.value - vat.value, 'derived from total - VAT');
     notes.push('invoiceSum was derived from invoiceSumAndVat - invoiceVat');
-  } else if (gross && net && !vat) {
+  } else if (trusted(gross) && trusted(net) && !vat) {
     vat = derive(gross.value - net.value, 'derived from total - invoice sum');
     notes.push('invoiceVat was derived from invoiceSumAndVat - invoiceSum');
   }
