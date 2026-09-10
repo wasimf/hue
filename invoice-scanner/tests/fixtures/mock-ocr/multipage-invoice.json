@@ -1,0 +1,246 @@
+{
+  "pages": [
+    {
+      "width": 1000,
+      "height": 1400,
+      "lines": [
+        {
+          "text": "Northwind Trading GmbH",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 60,
+            "x1": 470,
+            "y1": 100
+          }
+        },
+        {
+          "text": "Registration number HRB 91827",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 108,
+            "x1": 400,
+            "y1": 128
+          }
+        },
+        {
+          "text": "INVOICE",
+          "confidence": 0.96,
+          "box": {
+            "x0": 760,
+            "y0": 58,
+            "x1": 930,
+            "y1": 92
+          }
+        },
+        {
+          "text": "Invoice No. 2025/0771",
+          "confidence": 0.96,
+          "box": {
+            "x0": 640,
+            "y0": 120,
+            "x1": 940,
+            "y1": 142
+          }
+        },
+        {
+          "text": "Date of issue: 2025-01-09",
+          "confidence": 0.96,
+          "box": {
+            "x0": 640,
+            "y0": 150,
+            "x1": 940,
+            "y1": 172
+          }
+        },
+        {
+          "text": "Bill To",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 220,
+            "x1": 170,
+            "y1": 242
+          }
+        },
+        {
+          "text": "Contoso Retail Inc",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 248,
+            "x1": 380,
+            "y1": 270
+          }
+        },
+        {
+          "text": "Item",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 340,
+            "x1": 220,
+            "y1": 360
+          }
+        },
+        {
+          "text": "Amount",
+          "confidence": 0.96,
+          "box": {
+            "x0": 830,
+            "y0": 340,
+            "x1": 940,
+            "y1": 360
+          }
+        },
+        {
+          "text": "Consulting - January",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 380,
+            "x1": 380,
+            "y1": 400
+          }
+        },
+        {
+          "text": "3,400.00",
+          "confidence": 0.96,
+          "box": {
+            "x0": 830,
+            "y0": 380,
+            "x1": 940,
+            "y1": 400
+          }
+        },
+        {
+          "text": "Page 1 of 2",
+          "confidence": 0.96,
+          "box": {
+            "x0": 450,
+            "y0": 1340,
+            "x1": 560,
+            "y1": 1360
+          }
+        }
+      ]
+    },
+    {
+      "width": 1000,
+      "height": 1400,
+      "lines": [
+        {
+          "text": "Northwind Trading GmbH",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 60,
+            "x1": 470,
+            "y1": 92
+          }
+        },
+        {
+          "text": "Invoice No. 2025/0771 (continued)",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 100,
+            "x1": 470,
+            "y1": 122
+          }
+        },
+        {
+          "text": "Travel expenses",
+          "confidence": 0.96,
+          "box": {
+            "x0": 80,
+            "y0": 200,
+            "x1": 380,
+            "y1": 220
+          }
+        },
+        {
+          "text": "600.00",
+          "confidence": 0.96,
+          "box": {
+            "x0": 830,
+            "y0": 200,
+            "x1": 940,
+            "y1": 220
+          }
+        },
+        {
+          "text": "Subtotal",
+          "confidence": 0.96,
+          "box": {
+            "x0": 620,
+            "y0": 700,
+            "x1": 770,
+            "y1": 722
+          }
+        },
+        {
+          "text": "4,000.00",
+          "confidence": 0.96,
+          "box": {
+            "x0": 820,
+            "y0": 700,
+            "x1": 940,
+            "y1": 722
+          }
+        },
+        {
+          "text": "VAT 19%",
+          "confidence": 0.96,
+          "box": {
+            "x0": 620,
+            "y0": 730,
+            "x1": 770,
+            "y1": 752
+          }
+        },
+        {
+          "text": "760.00",
+          "confidence": 0.96,
+          "box": {
+            "x0": 820,
+            "y0": 730,
+            "x1": 940,
+            "y1": 752
+          }
+        },
+        {
+          "text": "Total due",
+          "confidence": 0.96,
+          "box": {
+            "x0": 620,
+            "y0": 762,
+            "x1": 770,
+            "y1": 786
+          }
+        },
+        {
+          "text": "4,760.00",
+          "confidence": 0.96,
+          "box": {
+            "x0": 820,
+            "y0": 762,
+            "x1": 940,
+            "y1": 786
+          }
+        },
+        {
+          "text": "Page 2 of 2",
+          "confidence": 0.96,
+          "box": {
+            "x0": 450,
+            "y0": 1340,
+            "x1": 560,
+            "y1": 1360
+          }
+        }
+      ]
+    }
+  ]
+}

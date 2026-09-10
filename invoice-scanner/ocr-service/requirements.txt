@@ -1,0 +1,11 @@
+# PaddleOCR sidecar dependencies.
+# CPU wheels; for GPU replace paddlepaddle with paddlepaddle-gpu and set
+# PADDLE_USE_GPU=true.
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-multipart==0.0.17
+numpy==1.26.4
+pillow==11.0.0
+PyMuPDF==1.24.14
+paddlepaddle==2.6.2
+paddleocr==2.9.1

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Invoice Scanner</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>Invoice Scanner</h1>
+      <span id="health" class="pill pill--muted">checking…</span>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Upload invoices</h2>
+        <p class="hint">PDF, PNG or JPG. Multiple files and multi-page documents are supported.</p>
+
+        <form id="upload-form">
+          <label id="dropzone" for="file-input" class="dropzone">
+            <input id="file-input" type="file" name="files" multiple accept=".pdf,.png,.jpg,.jpeg" />
+            <span class="dropzone__text">Drop files here or click to choose</span>
+            <ul id="file-list" class="file-list"></ul>
+          </label>
+
+          <div class="actions">
+            <label class="checkbox">
+              <input type="checkbox" id="debug-toggle" />
+              include debug output
+            </label>
+            <button type="submit" id="submit" disabled>Scan invoices</button>
+          </div>
+        </form>
+
+        <p id="status" class="status" role="status"></p>
+      </section>
+
+      <section id="results" class="card hidden">
+        <div class="results__header">
+          <h2>Results <span id="summary" class="pill pill--muted"></span></h2>
+          <div class="actions">
+            <a id="export-json" class="button button--ghost" href="#" download>Export JSON</a>
+            <a id="export-csv" class="button button--ghost" href="#" download>Export CSV</a>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="results-table">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Status</th>
+                <th>Issuer</th>
+                <th>Date</th>
+                <th>Number</th>
+                <th>Assignee</th>
+                <th class="numeric">Sum</th>
+                <th class="numeric">VAT</th>
+                <th class="numeric">Total</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="details"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

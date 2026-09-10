@@ -1,0 +1,306 @@
+{
+  "width": 1000,
+  "height": 1400,
+  "lines": [
+    {
+      "text": "ACME Software Ltd",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 60,
+        "x1": 430,
+        "y1": 98
+      }
+    },
+    {
+      "text": "12 King George St, Tel Aviv 6511301",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 106,
+        "x1": 420,
+        "y1": 126
+      }
+    },
+    {
+      "text": "VAT ID 514123456",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 132,
+        "x1": 300,
+        "y1": 152
+      }
+    },
+    {
+      "text": "TAX INVOICE",
+      "confidence": 0.96,
+      "box": {
+        "x0": 700,
+        "y0": 58,
+        "x1": 930,
+        "y1": 92
+      }
+    },
+    {
+      "text": "Invoice Number: INV-2025-0042",
+      "confidence": 0.96,
+      "box": {
+        "x0": 620,
+        "y0": 120,
+        "x1": 940,
+        "y1": 142
+      }
+    },
+    {
+      "text": "Invoice Date: 14/03/2025",
+      "confidence": 0.96,
+      "box": {
+        "x0": 620,
+        "y0": 150,
+        "x1": 940,
+        "y1": 172
+      }
+    },
+    {
+      "text": "Due Date: 14/04/2025",
+      "confidence": 0.96,
+      "box": {
+        "x0": 620,
+        "y0": 180,
+        "x1": 940,
+        "y1": 202
+      }
+    },
+    {
+      "text": "Bill To:",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 220,
+        "x1": 170,
+        "y1": 242
+      }
+    },
+    {
+      "text": "Globex Industries Ltd",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 248,
+        "x1": 380,
+        "y1": 270
+      }
+    },
+    {
+      "text": "5 Rothschild Blvd, Tel Aviv",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 274,
+        "x1": 380,
+        "y1": 294
+      }
+    },
+    {
+      "text": "Description",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 340,
+        "x1": 220,
+        "y1": 360
+      }
+    },
+    {
+      "text": "Qty",
+      "confidence": 0.96,
+      "box": {
+        "x0": 520,
+        "y0": 340,
+        "x1": 570,
+        "y1": 360
+      }
+    },
+    {
+      "text": "Unit price",
+      "confidence": 0.96,
+      "box": {
+        "x0": 640,
+        "y0": 340,
+        "x1": 760,
+        "y1": 360
+      }
+    },
+    {
+      "text": "Amount",
+      "confidence": 0.96,
+      "box": {
+        "x0": 830,
+        "y0": 340,
+        "x1": 940,
+        "y1": 360
+      }
+    },
+    {
+      "text": "Annual platform licence",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 380,
+        "x1": 380,
+        "y1": 400
+      }
+    },
+    {
+      "text": "1",
+      "confidence": 0.96,
+      "box": {
+        "x0": 520,
+        "y0": 380,
+        "x1": 560,
+        "y1": 400
+      }
+    },
+    {
+      "text": "1,000.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 640,
+        "y0": 380,
+        "x1": 760,
+        "y1": 400
+      }
+    },
+    {
+      "text": "1,000.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 830,
+        "y0": 380,
+        "x1": 940,
+        "y1": 400
+      }
+    },
+    {
+      "text": "Onboarding services",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 410,
+        "x1": 380,
+        "y1": 430
+      }
+    },
+    {
+      "text": "5",
+      "confidence": 0.96,
+      "box": {
+        "x0": 520,
+        "y0": 410,
+        "x1": 560,
+        "y1": 430
+      }
+    },
+    {
+      "text": "50.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 640,
+        "y0": 410,
+        "x1": 760,
+        "y1": 430
+      }
+    },
+    {
+      "text": "250.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 830,
+        "y0": 410,
+        "x1": 940,
+        "y1": 430
+      }
+    },
+    {
+      "text": "Subtotal",
+      "confidence": 0.96,
+      "box": {
+        "x0": 620,
+        "y0": 900,
+        "x1": 770,
+        "y1": 922
+      }
+    },
+    {
+      "text": "1,250.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 820,
+        "y0": 900,
+        "x1": 940,
+        "y1": 922
+      }
+    },
+    {
+      "text": "VAT 18%",
+      "confidence": 0.96,
+      "box": {
+        "x0": 620,
+        "y0": 930,
+        "x1": 770,
+        "y1": 952
+      }
+    },
+    {
+      "text": "225.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 820,
+        "y0": 930,
+        "x1": 940,
+        "y1": 952
+      }
+    },
+    {
+      "text": "Total including VAT",
+      "confidence": 0.96,
+      "box": {
+        "x0": 620,
+        "y0": 962,
+        "x1": 800,
+        "y1": 986
+      }
+    },
+    {
+      "text": "1,475.00",
+      "confidence": 0.96,
+      "box": {
+        "x0": 820,
+        "y0": 962,
+        "x1": 940,
+        "y1": 986
+      }
+    },
+    {
+      "text": "Payment terms: net 30",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 1100,
+        "x1": 360,
+        "y1": 1120
+      }
+    },
+    {
+      "text": "Bank Leumi, account 12-345-678901",
+      "confidence": 0.96,
+      "box": {
+        "x0": 80,
+        "y0": 1126,
+        "x1": 430,
+        "y1": 1146
+      }
+    }
+  ]
+}

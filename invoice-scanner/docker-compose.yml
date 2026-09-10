@@ -1,0 +1,23 @@
+services:
+  ocr:
+    build: ./ocr-service
+    environment:
+      PADDLE_LANGS: ${OCR_LANGS:-en}
+      PADDLE_USE_GPU: "false"
+    ports:
+      - "8868:8868"
+
+  app:
+    build: .
+    depends_on:
+      ocr:
+        condition: service_healthy
+    environment:
+      PORT: "3000"
+      OCR_PROVIDER: paddle
+      OCR_SERVICE_URL: http://ocr:8868
+      OCR_LANGS: ${OCR_LANGS:-en}
+      UPLOAD_DIR: /tmp/uploads
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
