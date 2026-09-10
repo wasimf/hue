@@ -15,6 +15,8 @@
 
   /** @type {File[]} */
   let selected = [];
+  /** @type {object|null} */
+  let lastBatch = null;
 
   function renderSelection() {
     fileList.innerHTML = '';
@@ -115,9 +117,60 @@
       tableBody.append(row);
     }
 
-    document.getElementById('export-json').href = batch.exports.json;
-    document.getElementById('export-csv').href = batch.exports.csv;
+    lastBatch = batch;
     results.classList.remove('hidden');
+  }
+
+  /**
+   * Exports through POST /api/export with the data already on this page.
+   * The stored-batch links (`batch.exports`) work too, but only while the
+   * batch is still held by the instance that produced it - which is not the
+   * case on a serverless host, where every request may hit a fresh instance.
+   */
+  async function downloadExport(format) {
+    if (!lastBatch) return;
+
+    const invoices = lastBatch.invoices.map((entry) => entry.invoice);
+    for (const rejection of lastBatch.rejected) {
+      invoices.push({
+        issuer: null,
+        invoiceDate: null,
+        invoiceNumber: null,
+        assignee: null,
+        invoiceSum: null,
+        invoiceVat: null,
+        invoiceSumAndVat: null,
+        sourceFileName: rejection.sourceFileName,
+        warnings: [`[${rejection.code}] ${rejection.message}`],
+      });
+    }
+
+    const response = await fetch('/api/export', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ format, invoices }),
+    });
+    if (!response.ok) {
+      setStatus(`Export failed (${response.status}).`, true);
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoices-${lastBatch.batchId}.${format}`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  for (const [id, format] of [['export-json', 'json'], ['export-csv', 'csv']]) {
+    document.getElementById(id).addEventListener('click', (event) => {
+      event.preventDefault();
+      downloadExport(format).catch((error) => setStatus(String(error), true));
+    });
   }
 
   input.addEventListener('change', () => {
@@ -175,8 +228,14 @@
   fetch('/health/ready')
     .then((response) => response.json().then((body) => ({ ok: response.ok, body })))
     .then(({ ok, body }) => {
-      health.textContent = ok ? `OCR: ${body.ocr.provider} ready` : `OCR: ${body.ocr.provider} unavailable`;
-      health.className = `pill pill--${ok ? 'ok' : 'failed'}`;
+      if (body.mode === 'pdf-text-layer-only') {
+        health.textContent = 'Text-PDF mode — no OCR configured';
+        health.className = 'pill pill--needs_review';
+        health.title = 'PDFs containing a text layer are parsed exactly. Scans and images need an OCR service.';
+      } else {
+        health.textContent = ok ? `OCR: ${body.ocr.provider} ready` : `OCR: ${body.ocr.provider} unavailable`;
+        health.className = `pill pill--${ok ? 'ok' : 'failed'}`;
+      }
     })
     .catch(() => {
       health.textContent = 'API unreachable';

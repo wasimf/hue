@@ -48,7 +48,7 @@ const schema = z.object({
   MAX_FILES_PER_BATCH: z.coerce.number().int().positive().default(25),
   MAX_PAGES_PER_DOCUMENT: z.coerce.number().int().positive().default(25),
 
-  OCR_PROVIDER: z.enum(['paddle', 'mock']).default('paddle'),
+  OCR_PROVIDER: z.enum(['paddle', 'mock', 'none']).default('paddle'),
   OCR_SERVICE_URL: z.string().url().default('http://127.0.0.1:8868'),
   OCR_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
   OCR_MAX_RETRIES: z.coerce.number().int().min(0).max(5).default(2),

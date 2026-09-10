@@ -180,6 +180,33 @@ docker compose down -v         # also delete the model cache
 | Uploads return `413` | Raise `MAX_FILE_SIZE_BYTES` in the `app` service environment |
 | A scanned page returns no text | Raise `OCR_PDF_DPI` to 300, and check `?debug=true` output for what was recognised |
 
+### 4. Deploy to Vercel
+
+```bash
+vercel deploy            # from invoice-scanner/, or set Root Directory = invoice-scanner
+```
+
+`api/index.js` hands the request to the very same Fastify application; `vercel.json` routes the API
+paths to it and lets the platform serve `public/` directly.
+
+**What works there and what does not.** PaddleOCR cannot run on a serverless host, so the deployment
+defaults to `OCR_PROVIDER=none`:
+
+* PDFs that contain a text layer — the majority of invoices issued by software — parse exactly, with
+  full validation and export. `/health/ready` reports `"mode": "pdf-text-layer-only"` and the UI says
+  so in the header.
+* Scans and images are rejected with `OCR_UNAVAILABLE` and a message saying what to configure.
+* To get OCR there too, run `ocr-service/` anywhere reachable (a small VM, Fly.io, Cloud Run) and set
+  `OCR_PROVIDER=paddle` + `OCR_SERVICE_URL=https://…` in the Vercel project's environment variables.
+  Nothing in the code changes.
+
+**Platform limits worth knowing.** Request bodies are capped at 4.5 MB, so `MAX_FILE_SIZE_BYTES`
+defaults to 4 MB there. Function timeout is 60 s. `/tmp` is the only writable directory. Instances do
+not share memory, so a stored batch may not be found by a later request — which is why the UI exports
+by posting the data it already holds to `POST /api/export` rather than relying on
+`GET /api/export/:batchId`. Persist batches through a `BatchRepository` if you need those links to
+work across instances.
+
 ### Production build
 
 ```bash
@@ -342,7 +369,7 @@ All variables live in `.env.example` with comments; the most relevant ones:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` / `HOST` | `3000` / `0.0.0.0` | HTTP binding |
-| `OCR_PROVIDER` | `paddle` | `paddle` or `mock` |
+| `OCR_PROVIDER` | `paddle` | `paddle`, `mock`, or `none` (text-layer PDFs only) |
 | `OCR_SERVICE_URL` | `http://127.0.0.1:8868` | PaddleOCR sidecar |
 | `OCR_LANGS` | `en` | comma-separated PaddleOCR language codes |
 | `OCR_PDF_DPI` | `200` | rasterisation DPI for scanned PDFs |
@@ -400,7 +427,7 @@ in `createOcrProvider` — three methods, no other file changes.
 ## Tests
 
 ```bash
-npm test          # 74 tests
+npm test          # 75 tests
 npm run typecheck
 ```
 

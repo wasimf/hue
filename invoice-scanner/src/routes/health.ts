@@ -15,8 +15,14 @@ export async function registerHealthRoutes(app: AppInstance, container: AppConta
 
   app.get('/health/ready', async (_request, reply) => {
     const health = await container.ocr.healthCheck();
+    // OCR_PROVIDER=none is a deliberate deployment mode (text-layer PDFs only),
+    // not a degraded service, so it must not fail the readiness probe.
+    const ocrDisabled = container.config.OCR_PROVIDER === 'none';
+    const ready = ocrDisabled || health.available;
+
     const body = {
-      status: health.available ? 'ok' : 'degraded',
+      status: ready ? 'ok' : 'degraded',
+      mode: ocrDisabled ? 'pdf-text-layer-only' : 'full',
       ocr: {
         provider: container.config.OCR_PROVIDER,
         available: health.available,
@@ -26,6 +32,6 @@ export async function registerHealthRoutes(app: AppInstance, container: AppConta
       pdfTextLayer: container.config.PDF_TEXT_LAYER_ENABLED,
       timestamp: new Date().toISOString(),
     };
-    return reply.code(health.available ? 200 : 503).send(body);
+    return reply.code(ready ? 200 : 503).send(body);
   });
 }

@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fastifyMultipart from '@fastify/multipart';
@@ -36,7 +37,11 @@ export async function createServer(overrides: ContainerOverrides = {}): Promise<
     },
   });
 
-  await app.register(fastifyStatic, { root: publicDirectory, prefix: '/', index: ['index.html'] });
+  // On a serverless host the static assets are served by the platform and are
+  // not part of the function bundle, so registering the plugin would throw.
+  if (existsSync(publicDirectory)) {
+    await app.register(fastifyStatic, { root: publicDirectory, prefix: '/', index: ['index.html'] });
+  }
 
   await container.uploads.init();
 

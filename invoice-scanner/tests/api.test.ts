@@ -243,6 +243,27 @@ describe('HTTP API', () => {
     expect(response.body).toContain('Edited Ltd');
   });
 
+  it('runs without OCR: text PDFs parse, scans fail with an explanation', async () => {
+    const { app: noOcr } = await createServer({ config: testConfig({ OCR_PROVIDER: 'none' }) });
+    await noOcr.ready();
+
+    try {
+      const ready = await noOcr.inject({ method: 'GET', url: '/health/ready' });
+      // A deployment without OCR is a mode, not a degraded service.
+      expect(ready.statusCode).toBe(200);
+      expect(ready.json()).toMatchObject({ status: 'ok', mode: 'pdf-text-layer-only' });
+
+      const pdf = await createBlankPdf(1);
+      const { body, headers } = multipart([{ name: 'scan.pdf', content: pdf, type: 'application/pdf' }]);
+      const response = await noOcr.inject({ method: 'POST', url: '/api/invoices', payload: body, headers });
+
+      expect(response.json().rejected[0]).toMatchObject({ sourceFileName: 'scan.pdf', code: 'OCR_UNAVAILABLE' });
+      expect(response.json().rejected[0].message).toMatch(/not configured on this deployment/);
+    } finally {
+      await noOcr.close();
+    }
+  });
+
   it('serves the upload UI', async () => {
     const response = await app.inject({ method: 'GET', url: '/' });
     expect(response.statusCode).toBe(200);

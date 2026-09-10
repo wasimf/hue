@@ -8,11 +8,13 @@ async function main(): Promise<void> {
   const { app, container } = await createServer();
 
   const health = await container.ocr.healthCheck();
-  if (!health.available) {
+  if (!health.available && config.OCR_PROVIDER !== 'none') {
     logger.warn(
       { provider: config.OCR_PROVIDER, details: health.details },
       'the OCR back-end is not reachable; uploads of scanned documents will fail until it is up',
     );
+  } else if (config.OCR_PROVIDER === 'none') {
+    logger.info('running without OCR: only PDFs that carry a text layer can be parsed');
   }
 
   await app.listen({ port: config.PORT, host: config.HOST });
