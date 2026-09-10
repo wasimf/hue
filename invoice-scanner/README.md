@@ -434,7 +434,7 @@ in `createOcrProvider` — three methods, no other file changes.
 ## Tests
 
 ```bash
-npm test          # 75 tests
+npm test          # 76 tests
 npm run typecheck
 ```
 
